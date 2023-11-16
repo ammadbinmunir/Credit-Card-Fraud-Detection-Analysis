@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[50]:
+# In[1]:
 
 
 #importing pandas and numpy
@@ -13,9 +13,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import precision_score, recall_score, f1_score
 from scipy.stats import ks_2samp
+from tqdm import tqdm
 
 
-# In[51]:
+# In[2]:
 
 
 #importing credit fraud CSV file and recalling it
@@ -23,7 +24,7 @@ df= pd.read_csv("C:\\Users\\Ammad\OneDrive\\Desktop\\BPP University\\other cours
 df
 
 
-# In[52]:
+# In[3]:
 
 
 
@@ -33,7 +34,52 @@ target= "Class"
 df[target].value_counts()
 
 
-# In[53]:
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[4]:
+
+
+#installing snap lib for data cleaning 
+get_ipython().system('pip -q install snaplib')
+get_ipython().system('pip install termcolor')
+get_ipython().system('pip install lightgbm')
+
+
+# In[5]:
+
+
+#loading snaplib libraray
+from snaplib.snaplib import Snaplib
+
+
+# In[6]:
+
+
+#data cleaning to eliminate irrelevant values
+#sl needs to be insatlled to clean data 
+df=Snaplib.cleane(df,target=target,verbose= True)
+df[target].value_counts
+
+
+# In[7]:
+
+
+#cleaning data from the table by removing duplicates and removing not a number values
+df.info()
+df = Snaplib.cleane(df, target='Class', verbose=True)
+
+
+# In[8]:
 
 
 # Set the aesthetic style of the plots
@@ -64,35 +110,34 @@ plt.tight_layout()
 plt.show()
 
 
-# In[67]:
+# In[10]:
 
 
-#installing snap lib for data cleaning 
-get_ipython().system('pip -q install snaplib')
-get_ipython().system('pip install termcolor')
-get_ipython().system('pip install lightgbm')
+#to set fields in respective to create a histogram grid in future
+target = "Class"
+
+predictors = df.columns.to_list()
+predictors.remove(target)
+print(predictors)
 
 
-# In[68]:
+# In[12]:
 
 
-#loading snaplib libraray
-from snaplib.snaplib import Snaplib
+#creating a grid of histograms using seaborn for multiple predictor variables (specified by the predictors list) with respect to the target variable. 
+fig, axis = plt.subplots(nrows=6, ncols=5, figsize=(18,18))
+axis = axis.flatten()
 
-
-# In[73]:
-
-
-#data cleaning to eliminate irrelevant values
-#sl needs to be insatlled to clean data 
-df=Snaplib.cleane(df,target=target,verbose= True)
-df[target].value_counts
-
-
-# In[ ]:
-
-
-
+for idx, axis in tqdm(enumerate(axis)):
+    try:
+        sns.histplot(data=df, x=df[predictors].iloc[:, idx],
+                     ax=axis, hue=target, legend=True, bins=20)
+#         sns.lmplot(data=df, x='Amount', y=predictors[idx], hue=target)
+        axis.set_ylabel('')    
+        axis.set_xlabel('')
+        axis.set_title(predictors[idx])
+    except(IndexError):
+        pass
 
 
 # In[ ]:
